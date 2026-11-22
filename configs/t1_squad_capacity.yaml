@@ -1,0 +1,24 @@
+# T1: SQuAD retrieval trace; topical bursts (article order) vs. no locality (shuffled).
+name: t1_squad_capacity
+kv_bytes_per_token: 131072
+l0: 26700
+warmup_frac: 0.1
+seeds: [0, 1, 2]
+workload:
+  trace: traces/squad_train.json.gz
+  docs_per_request: 3
+  order: article
+sweep:
+  budget_frac: [0.01, 0.02, 0.05, 0.1, 0.2]
+  workload.order: [article, shuffled]
+policies:
+  - {name: lru}
+  - {name: leaf_lru}
+  - {name: leaf_lru, lookahead: 4, label: leaf_lru_la}
+  - {name: lfu}
+  - {name: leaf_lfu}
+  - {name: pgdsf}
+  - {name: ours, decay: 0.0001}
+  - {name: ours, decay: 0.0001, cost: tokens, label: ours_tokencost}
+  - {name: ours, decay: 0.0, label: ours_nodecay}
+  - {name: ours_nodep, decay: 0.0001}

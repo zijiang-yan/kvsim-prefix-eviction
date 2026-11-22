@@ -1,0 +1,25 @@
+# Local smoke test: small trace, one seed, every policy. ~1 min.
+name: smoke
+kv_bytes_per_token: 131072
+warmup_frac: 0.1
+seeds: [0]
+workload:
+  n_requests: 3000
+  n_docs: 1000
+  docs_per_request: 3
+  zipf_alpha: 0.9
+  shift_every: 1000
+sweep:
+  budget_frac: [0.05, 0.1, 0.2]
+  l0: [26700, 4000]            # Llama-3-8B FLOP estimate; attention-heavy regime
+policies:
+  - {name: lru}
+  - {name: leaf_lru}
+  - {name: leaf_lru, lookahead: 4, label: leaf_lru_la}
+  - {name: lfu}
+  - {name: leaf_lfu}
+  - {name: pgdsf}
+  - {name: ours, decay: 0.001}
+  - {name: ours, decay: 0.001, cost: tokens, label: ours_tokencost}
+  - {name: ours, decay: 0.0, label: ours_nodecay}
+  - {name: ours_nodep, decay: 0.001}

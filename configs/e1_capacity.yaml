@@ -1,0 +1,25 @@
+# E1: savings vs. cache budget (also the source for E6 overhead: decision_us_mean, meta_bytes_est).
+name: e1_capacity
+kv_bytes_per_token: 131072
+l0: 26700
+warmup_frac: 0.1
+seeds: [0, 1, 2, 3, 4]
+workload:
+  n_requests: 50000
+  n_docs: 10000
+  docs_per_request: 3
+  zipf_alpha: 0.9
+  shift_every: 0
+sweep:
+  budget_frac: [0.02, 0.05, 0.1, 0.2, 0.3, 0.5]
+policies:
+  - {name: lru}
+  - {name: leaf_lru}
+  - {name: leaf_lru, lookahead: 4, label: leaf_lru_la}
+  - {name: lfu}
+  - {name: leaf_lfu}
+  - {name: pgdsf}
+  - {name: ours, decay: 0.001}
+  - {name: ours, decay: 0.001, cost: tokens, label: ours_tokencost}
+  - {name: ours, decay: 0.0, label: ours_nodecay}
+  - {name: ours_nodep, decay: 0.001}
